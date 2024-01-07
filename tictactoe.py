@@ -7,40 +7,39 @@ class TicTacToe():
     def __init__(self) -> None:
         
         self.board = np.zeros((3,3))
-        self.possible_moves = [0,1,2]
+        self.possible_moves = [0,1,2] 
         self.gameplay()
 
-    def firstPlayerMove(self) -> None:
-
-        x, y = map(int, input("Coordinates for X: "))
+    def makeMove(self, counter: int) -> None:
+        print(counter)
         
-        if x not in self.possible_moves or y not in self.possible_moves:
-            print('Please choose appropriate coordinates.')
-            self.firstPlayerMove()
+        if counter%2 == 1:
+            x, y = map(int, input("Coordinates for X: "))
 
-        if self.board[x][y] == 0:
-            self.board[x][y] = 1
-            self.winCheck()
-            self.showBoard()
+            while x not in self.possible_moves or y not in self.possible_moves:
+                print('Please choose appropriate coordinates.')
+                x, y = map(int, input("Coordinates for X: "))
+    
+            print(x,y)
+            if self.board[x][y] == 0:
+                self.board[x][y] = 1
+                self.showBoard()
+            else:
+                print('Please choose an appropriate place.')
+                self.makeMove(counter)
+
         else:
-            print('Please choose an appropriate place.')
-            self.firstPlayerMove()
+            x, y = map(int, input("Coordinates for O: "))
 
-    def secondPlayerMove(self) -> None:
-
-        x, y = map(int, input("Coordinates for O: "))
-
-        if x not in self.possible_moves or y not in self.possible_moves:
-            print('Please choose appropriate coordinates.')
-            self.secondPlayerMove()
-
-        if self.board[x][y] == 0:
-            self.board[x][y] = 4
-            self.winCheck()
-            self.showBoard()
-        else:
-            print('Please choose an appropriate place.')
-            self.secondPlayerMove()
+            if x not in self.possible_moves or y not in self.possible_moves:
+                print('Please choose appropriate coordinates.')
+                x, y = map(int, input("Coordinates for O: "))
+            
+            if self.board[x][y] == 0:
+                self.board[x][y] = 4
+            else:
+                print('Please choose an appropriate place.')
+                self.makeMove(counter)
 
     def showBoard(self) -> None:
 
@@ -49,6 +48,7 @@ class TicTacToe():
         board_sub = np.where(board_sub == '4.0', 'O', board_sub)
         board_sub = np.where(board_sub == '0.0', ' ', board_sub)
         
+        os.system('cls')
         print("|---|---|---|")
         for i in range(3):
             for j in range(3):
@@ -58,7 +58,7 @@ class TicTacToe():
                     print(f"| {board_sub[i, j]} ",end='')
             print("\n|---|---|---|")
     
-    def winCheck(self) -> None:
+    def winCheck(self) -> int:
         
         row_sums = np.sum(self.board, axis=1)
         column_sums = np.sum(self.board, axis=0)
@@ -66,41 +66,45 @@ class TicTacToe():
         other_diagonal_sum = np.sum(np.diag(np.fliplr(self.board)))
 
         if np.any(row_sums == 3) or np.any(column_sums == 3) or main_diagonal_sum == 3 or other_diagonal_sum == 3:
-            print('Player 1 won!')
-            self.showBoard()
-            exit()
+            return 1
 
         elif np.any(row_sums == 12) or np.any(column_sums == 12) or main_diagonal_sum == 12 or other_diagonal_sum == 12:
-            print('Player 2 won!')
-            self.showBoard()
-            exit()
+            return 2
 
-        # if any(val == 3 for val in (np.any(row_sums == 3), np.any(column_sums == 3), main_diagonal_sum == 3, other_diagonal_sum == 3)):
-        #     print('Player 1 won!')
-        # elif any(val == 12 for val in (np.any(row_sums == 12), np.any(column_sums == 12), main_diagonal_sum == 12, other_diagonal_sum == 12)):
-        #     print('Player 2 won!')
-
+        return 0
+    
     def gameplay(self) -> None:
         print("Welcome to the TicTacToe Game!\n")
         self.showBoard()
 
+        counter = 1
         while True:
 
             if 0 not in self.board:
+                self.showBoard()
                 print('Game is draw!')
-                exit()
+                break
 
-            self.firstPlayerMove()
-            os.system('cls')
-            self.showBoard()
+            self.makeMove(counter)
             
-            if 0 not in self.board:
-                print('Game is draw!')
-                exit()           
+            if self.winCheck() == 1:
+                self.showBoard()
+                print("Player 1 won!")
+                break
 
-            self.secondPlayerMove()
-            os.system('cls')
-            self.showBoard() 
+            elif self.winCheck() == 2:
+                
+                self.showBoard()
+                print("Player 2 won!")
+                break
+
+            counter = counter +1
+
+            
+            self.showBoard()
+        
+        print("\nThank you for playing!\n")
+        exit()
 
 if __name__ == "__main__":
     game = TicTacToe()
